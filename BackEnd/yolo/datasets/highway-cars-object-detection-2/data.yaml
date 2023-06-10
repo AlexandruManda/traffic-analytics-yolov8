@@ -1,0 +1,13 @@
+train: ../train/images
+val: ../valid/images
+test: ../test/images
+
+nc: 4
+names: ['bus', 'car', 'motorcycle', 'truck']
+
+roboflow:
+  workspace: car-detection-smznf
+  project: highway-cars-object-detection
+  version: 2
+  license: CC BY 4.0
+  url: https://universe.roboflow.com/car-detection-smznf/highway-cars-object-detection/dataset/2

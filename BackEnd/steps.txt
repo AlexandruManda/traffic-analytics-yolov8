@@ -1,0 +1,5 @@
+pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu116
+
+uwsgi --http :8000 --wsgi-file run.py --callable app
+
+uwsgi --http 127.0.0.1:8000 --master -p 4 -w run:app

@@ -1,0 +1,28 @@
+version: "3.10"
+name: traffic_analysis_development
+services:
+  frontend:
+    build: 
+      context: ./FrontEnd
+      dockerfile: Dockerfile.dev
+    container_name: frontend_c
+    ports:
+      - '3000:3000'
+    stdin_open: true
+    tty: true
+
+  backend:
+    build:
+      context: ./BackEnd
+      dockerfile: Dockerfile.dev
+    container_name: backend_c
+    ports:
+      - '5000:5000'
+    deploy:
+      resources:
+        reservations:
+          devices:
+          - driver: nvidia
+            device_ids: ['0']
+            capabilities: [gpu]
+
