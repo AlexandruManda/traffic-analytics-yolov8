@@ -1,7 +1,8 @@
 import eventlet
+
+from app.sockets import VideoNamespace
 eventlet.monkey_patch()
 import os
-
 from flask_cors import CORS
 from flask_socketio import SocketIO
 from flask import Flask
@@ -18,7 +19,12 @@ def create_app():
 
     CORS(app, resources={r"/*": {"origins": "*"}})
 
+    socketio = SocketIO(app,  logger=True, cors_allowed_origins='*',engineio_logger=True)
+    
     from . import routes
     app.register_blueprint(routes.bp)
 
-    return app
+
+    socketio.on_namespace(VideoNamespace('/test', app_context=app))
+
+    return app,socketio
