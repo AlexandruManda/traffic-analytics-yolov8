@@ -1,4 +1,5 @@
 version: "3.10"
+
 name: traffic_analysis_production
 services:
   frontend:
@@ -23,5 +24,3 @@ services:
           - driver: nvidia
             device_ids: ['0']
             capabilities: [gpu]
-
-x-docker-project-name: traffic_analysis_production

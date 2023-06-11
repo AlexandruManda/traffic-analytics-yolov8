@@ -1,4 +1,4 @@
-#form-file-upload {
+   /* #form-file-upload {
     height: 16rem;
     width: 28rem;
     max-width: 100%;
@@ -13,30 +13,36 @@
   #label-file-upload {
     height: 100%;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
     border-width: 2px;
     border-radius: 1rem;
     border-style: dashed;
     border-color: #cbd5e1;
-    background-color: #f8fafc;
+    background-color: #f0f8ff;
+    padding: 1rem;
   }
   
   #label-file-upload.drag-active {
-    background-color: #ffffff;
+    background-color: #d8e8f0;
   }
   
-  .upload-button {
+  .upload-button,
+  #webcam-button {
     cursor: pointer;
     padding: 0.25rem;
     font-size: 1rem;
     border: none;
-    font-family: 'Oswald', sans-serif;
-    background-color: transparent;
+    background-color: #4682b4;
+    color: #ffffff;
+    margin: 0.5rem;
+    border-radius: 0.25rem;
   }
   
-  .upload-button:hover {
-    text-decoration-line: underline;
+  .upload-button:hover,
+  #webcam-button:hover {
+    background-color: #5a9bd4;
   }
   
   #drag-file-element {
@@ -49,3 +55,95 @@
     bottom: 0px;
     left: 0px;
   }
+  
+  #source-url {
+    margin-top: 1rem;
+    padding: 0.25rem;
+    border-radius: 0.25rem;
+    border: 1px solid #cccccc;
+  }
+  
+  .validation-message {
+    font-size: 0.8rem;
+    margin-top: 0.5rem;
+  }
+  
+  .icon {
+    margin-right: 0.5rem;
+  }
+   */
+
+   #form-file-upload {
+    height: 16rem;
+    width: 28rem;
+    max-width: 100%;
+    text-align: center;
+    position: relative;
+  }
+  
+  #input-file-upload {
+    display: none;
+  }
+  
+  #label-file-upload {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-width: 2px;
+    border-radius: 1rem;
+    border-style: dashed;
+    border-color: #cbd5e1;
+    background-color: #e6ffe6; /* pale green */
+    padding: 1rem;
+  }
+  
+  #label-file-upload.drag-active {
+    background-color: #ccffcc; /* light pale green */
+  }
+  
+  .upload-button,
+  #webcam-button {
+    cursor: pointer;
+    padding: 0.25rem;
+    font-size: 1rem;
+    border: none;
+    background-color: #4caf50; /* green */
+    color: #ffffff;
+    margin: 0.5rem;
+    border-radius: 0.25rem;
+  }
+  
+  .upload-button:hover,
+  #webcam-button:hover {
+    background-color: #66bb6a; /* light green */
+  }
+  
+  #drag-file-element {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 1rem;
+    top: 0px;
+    right: 0px;
+    bottom: 0px;
+    left: 0px;
+  }
+  
+  #source-url {
+    margin-top: 1rem;
+    padding: 0.25rem;
+    border-radius: 0.25rem;
+    border: 1px solid #cccccc;
+  }
+  
+  .validation-message {
+    font-size: 0.8rem;
+    margin-top: 0.5rem;
+  }
+  
+  .icon {
+    margin-right: 0.5rem;
+  }
+  

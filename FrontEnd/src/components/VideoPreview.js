@@ -1,41 +1,39 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from 'react-router-dom';
+import ReactPlayer from 'react-player';
 
-export default function VideoPreview({ file }) {
+export default function VideoPreview({ file, onLineDrawing, handleFileReset }) {
     const videoRef = useRef(null);
     const canvasRef = useRef(null);
     const [startPoint, setStartPoint] = useState(null);
     const [lines, setLines] = useState([]);
     const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
     const [currentLine, setCurrentLine] = useState(null);
+    const [isVideoLoaded, setIsVideoLoaded] = useState(false);
 
     const navigate = useNavigate();
-    // URL Building function
+
     const buildURL = () => {
-        let url = `/stream?source=${file.name}`;
+        let builtUrl = `/stream?source=${file?.name }`;
         lines.forEach((line, index) => {
-            url += `&line${index + 1}=(${line.start.x},${line.start.y})(${line.end.x},${line.end.y})`;
+            builtUrl += `&line${index + 1}=(${line.start.x},${line.start.y})(${line.end.x},${line.end.y})`;
         });
-        return url;
+        return builtUrl;
     };
-    
 
     useEffect(() => {
-        if (!file) {
-            return;
+        if (file) {
+            const video = videoRef.current;
+            video.onloadedmetadata = () => {
+                setDimensions({ width: video.videoWidth, height: video.videoHeight });
+            };
+            const objectURL = URL.createObjectURL(file);
+            video.src = objectURL;
+            video.play();
+            return () => {
+                URL.revokeObjectURL(objectURL);
+            };
         }
-
-        const video = videoRef.current;
-        video.onloadedmetadata = () => {
-            setDimensions({ width: video.videoWidth, height: video.videoHeight });
-        };
-
-        const objectURL = URL.createObjectURL(file);
-        video.src = objectURL;
-        video.play();
-        return () => {
-            URL.revokeObjectURL(objectURL);
-        };
     }, [file]);
 
     useEffect(() => {
@@ -69,19 +67,16 @@ export default function VideoPreview({ file }) {
         };
 
         if (lines.length === 2) {
-            // replace '/path-to-navigate' with the path you want to navigate to when two lines are drawn
-            console.log('hello')
-            // console.log(lines);
+            onLineDrawing(lines);
             const url = buildURL();
-            console.log(url);
+            handleFileReset();
             navigate(url);
         }
 
         const intervalId = setInterval(drawCanvas, 1000 / 30);
         return () => clearInterval(intervalId);
-    }, [lines]);
+    }, [lines, currentLine, onLineDrawing, handleFileReset, navigate]);
 
-    //% gets triggered when the mouse click button is pressed
     const handleMouseDown = (e) => {
         if (lines.length >= 2) {
             return;
@@ -93,7 +88,6 @@ export default function VideoPreview({ file }) {
         setCurrentLine({ start: { x, y }, end: { x, y } });
     };
 
-    //? gets triggered when the mouse click button is released
     const handleMouseUp = (e) => {
         if (lines.length >= 2) {
             return;
@@ -107,7 +101,6 @@ export default function VideoPreview({ file }) {
         }
     };
 
-    //? gets triggered when the mouse is moved
     const handleMouseMove = (e) => {
         if (lines.length >= 2) {
             return;
@@ -123,17 +116,34 @@ export default function VideoPreview({ file }) {
 
     return (
         <div>
-            <video ref={videoRef} style={{ display: 'none' }} autoPlay muted loop />
-            <canvas
-                ref={canvasRef}
-                width={dimensions.width}
-                height={dimensions.height}
-                style={{ border: '1px solid black' }}
-                onMouseDown={handleMouseDown}
-                onMouseUp={handleMouseUp}
-                onMouseMove={handleMouseMove}
-            />
-            <button onClick={() => setLines([])}>Clear</button>
+            {(file || isVideoLoaded) && (
+                <div style={{ position: 'relative' }}>
+                    {file && (
+                        <video ref={videoRef} style={{ display: 'none' }} autoPlay muted loop />
+                    )}
+                    {isVideoLoaded && (
+                        <ReactPlayer
+                            // url={URL.createObjectURL(file)}
+                            ref={videoRef}
+                            width="100%"
+                            height="100%"
+                            playing
+                            controls
+                        />
+                    )}
+                    <canvas
+                        ref={canvasRef}
+                        width={dimensions.width}
+                        height={dimensions.height}
+                        style={{ border: '1px solid black' }}
+                        onMouseDown={handleMouseDown}
+                        onMouseUp={handleMouseUp}
+                        onMouseMove={handleMouseMove}
+                    />
+                    <button onClick={() => setLines([])}>Clear</button>
+                </div>
+            )}
         </div>
     );
 }
+

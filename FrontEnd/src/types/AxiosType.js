@@ -8,4 +8,12 @@ let axiosForm =   axios.create({
   }
 });
 
-export default axiosForm;
+const axiosInstance = axios.create({
+  baseURL: URL,
+});
+
+const Axios = {
+  axiosForm,
+  axiosInstance
+};
+export default Axios;

@@ -1,4 +1,4 @@
-from flask import Response, request, Blueprint, render_template, make_response
+from flask import Response, request, Blueprint, render_template, make_response, send_from_directory
 from yolo.tracker import ObjectTracker
 from flask import current_app
 import os
@@ -14,7 +14,6 @@ def convert_query_param_to_tuples(param):
     # Convert the numbers to ints and group them into tuples
     tuples = [(round(float(numbers[i])), round(float(numbers[i+1]))) for i in range(0, len(numbers), 2)]
 
-    
     return tuples
 
 def download_youtube_video(url, output_path):
@@ -61,15 +60,7 @@ def video():
     line1 = request.args.get('line1')
     line2 = request.args.get('line2')
     lines_list = []
-    if line1 and line2 : 
-        lines_list.append(convert_query_param_to_tuples(line1))
-        lines_list.append(convert_query_param_to_tuples(line2))
-        tracker = ObjectTracker(lines_coords=lines_list)
-    else:
-        tracker = ObjectTracker()
     upload_folder = current_app.config['UPLOAD_VIDEO_FOLDER']
-
-   
     if re.match(r'^https?://', filename):
         # It's a URL, use it directly as the source_path
         # source_path = filename
@@ -80,6 +71,28 @@ def video():
         # It's a filename, append it to the UPLOAD_VIDEO_FOLDER path
         source_path = os.path.join(upload_folder, filename)
 
+    if line1 and line2 : 
+        lines_list.append(convert_query_param_to_tuples(line1))
+        lines_list.append(convert_query_param_to_tuples(line2))
+        tracker = ObjectTracker(source_path=source_path,lines_coords=lines_list)
+    else:
+        tracker = ObjectTracker(source_path=source_path)
     
-    tracker.set_source_path(source_path)
+
+
     return Response(tracker(), mimetype='multipart/x-mixed-replace; boundary=frame')
+
+@bp.route('/download', methods=['GET'])
+def download():
+    youtube_url = request.args.get('url')
+    save_path = current_app.config['UPLOAD_VIDEO_FOLDER']
+    filename = download_youtube_video(youtube_url, save_path)
+    print(filename)
+    if filename:
+        file_path = os.path.join(save_path, filename)
+        response = make_response(send_from_directory(save_path, filename, as_attachment=True))
+        response.headers['Content-Disposition'] = f'attachment; filename="{filename}"'
+        response.headers['Access-Control-Expose-Headers'] = 'Content-Disposition'
+        return response
+    else:
+        return 'Failed to download the YouTube video'

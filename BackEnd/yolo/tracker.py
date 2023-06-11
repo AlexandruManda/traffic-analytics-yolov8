@@ -30,8 +30,6 @@ class ObjectTracker:
         self.line_limits1=lines_coords[0]
         self.line_limits2=lines_coords[1]
 
-    def set_source_path(self, source_path):
-        self.source_path = source_path
 
     def load_model(self):
         model_path = os.path.join(
