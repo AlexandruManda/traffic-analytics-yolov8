@@ -37,6 +37,7 @@ RUN apt-get install -y libglib2.0-0
 
 COPY . .
 
+# RUN chmod 644 ./assets/images/counter.png
 EXPOSE 5000
 
 CMD uwsgi --http :5000 --http-websockets --master --wsgi-file run.py --callable app

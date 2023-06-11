@@ -2,6 +2,7 @@ import sys
 import os
 from ultralytics import YOLO
 import cv2
+import cvzone
 import supervision as sv
 import torch
 from queue import Queue
@@ -22,15 +23,22 @@ class ObjectTracker:
         self.source_path = source_path
         self.coordinatesDict = {}
         self.updated_trackers_speed = {}
-        self.total_objects_count1 = 0
-        self.counted_objects1 = set()
-        self.total_objects_count2 = 0
-        self.counted_objects2 = set()
+        self.total_objects_count_line1 = 0
+        self.total_objects_count_line2 = 0
+        self.counted_objects_line1 = set()
+        self.counted_objects_line2 = set()
+        self.total_objects_count = 0
+        self.counted_objects = set()
         self.class_object_counts={'car':0,'motorcycle':0,'bus':0,'truck':0}
+        self.total_class_object_counts={'car':0,'motorcycle':0,'bus':0,'truck':0}
         self.line_limits1=lines_coords[0]
         self.line_limits2=lines_coords[1]
+        self.current_dir = os.path.join(os.path.dirname((os.path.abspath(__file__))))
+        self.img_path=os.path.join(self.current_dir,"assets","Images","counter.png")
+        self.boxes_image = cv2.imread(self.img_path,cv2.IMREAD_UNCHANGED)
 
-
+                       
+                
     def load_model(self):
         model_path = os.path.join(
             self.current_dir, 'runs', 'detect', 'train-v2', 'weights', 'best.pt')
@@ -63,11 +71,18 @@ class ObjectTracker:
             for detection in detections:
                 tracker_id = detection[-1]
                 current_location = detection[:4]
+                class_id = detection[-2]
+                class_name = self.class_name_dict[class_id]
+                if(tracker_id not in self.counted_objects.copy()):
+                    self.total_objects_count +=1
+                    self.total_class_object_counts[class_name] +=1
+                    self.counted_objects.add(tracker_id)
+
                 if tracker_id in self.coordinatesDict:
                     if tracker_id not in frame_counter:
                         frame_counter[tracker_id] = 0
                     prev_location = self.coordinatesDict[tracker_id][0]
-                    if frame_counter[tracker_id] == 2:
+                    if frame_counter[tracker_id] == 4:
                         speed = estimated_speed(prev_location, current_location)
                         self.updated_trackers_speed[tracker_id] = [current_location, speed]
                         self.coordinatesDict[tracker_id] = self.updated_trackers_speed[tracker_id]
@@ -97,6 +112,7 @@ class ObjectTracker:
         cv2.putText(frame, counter_text, (x1, y1),
                     cv2.FONT_HERSHEY_SIMPLEX, font_scale, (255, 255, 255), thickness)
         return frame
+    
     def count_class_objects_line(self, line_limits, detections, counted_objects, total_objects_count):  
         for xyxy, _, class_id, tracker_id in detections:
             x1,y1,x2,y2=xyxy
@@ -107,37 +123,63 @@ class ObjectTracker:
                     total_objects_count +=1
                     self.class_object_counts[class_name] +=1
                     counted_objects.add(tracker_id)
+
         return total_objects_count, counted_objects
     
+    def draw_class_boxes(self,frame):
+        _, frame_width = frame.shape[:2]
+        boxes_image_height, boxes_image_width = self.boxes_image.shape[:2]
+       
+        pos_x = int((frame_width - boxes_image_width) / 2)
+        pos_y = 0
+        pos = [pos_x, pos_y]
+
+        frame = cvzone.overlayPNG(frame,self.boxes_image, pos)
+        cv2.putText(frame,f"{self.total_class_object_counts['car']}"
+                    ,(pos_x+20, pos_y+15 + int(boxes_image_height/2)),
+                    cv2.FONT_HERSHEY_SIMPLEX,1,(255,255,255),2)
+        cv2.putText(frame,f"{self.total_class_object_counts['motorcycle']}"
+                    ,(pos_x+170, pos_y+15 + int(boxes_image_height/2)),
+                    cv2.FONT_HERSHEY_SIMPLEX,1,(255,255,255),2)
+        cv2.putText(frame,f"{self.total_class_object_counts['bus']}"
+                    ,(pos_x+320, pos_y+15 + int(boxes_image_height/2)),
+                    cv2.FONT_HERSHEY_SIMPLEX,1,(255,255,255),2)
+        cv2.putText(frame,f"{self.total_class_object_counts['truck']}"
+                    ,(pos_x+465, pos_y+15 + int(boxes_image_height/2)),
+                    cv2.FONT_HERSHEY_SIMPLEX,1,(255,255,255),2)
+      
+        return frame
+           
     def __call__(self):
         frame_counter = {}
         speed = 0
         for result in self.model.track(source=self.source_path, stream=True, agnostic_nms=True, tracker="bytetrack.yaml"):
             frame = result.orig_img
             self.line_limits1
-            self.draw_line_on_frame(frame,start_point = self.line_limits1[0],end_point=self.line_limits1[1])
-            self.draw_line_on_frame(frame,start_point = self.line_limits2[0],end_point=self.line_limits2[1])
+            self.draw_line_on_frame(frame,start_point = self.line_limits1[0],end_point=self.line_limits1[1],thickness=5)
+            self.draw_line_on_frame(frame,start_point = self.line_limits2[0],end_point=self.line_limits2[1],thickness=5)
             detections = self.get_detections(result)
 
-            self.total_objects_count1, self.counted_objects1 = self.count_class_objects_line(
-                self.line_limits1, detections, self.counted_objects1, self.total_objects_count1)
+            self.total_objects_count_line1, self.counted_objects_line1 = self.count_class_objects_line(
+                self.line_limits1, detections, self.counted_objects_line1, self.total_objects_count_line1)
 
-            self.total_objects_count2, self.counted_objects2 = self.count_class_objects_line(
-                self.line_limits2, detections, self.counted_objects2, self.total_objects_count2)
+            self.total_objects_count_line2, self.counted_objects_line2 = self.count_class_objects_line(
+                self.line_limits2, detections, self.counted_objects_line2, self.total_objects_count_line2)
 
-            frame = self.draw_counter_text(frame, self.line_limits1, str(self.total_objects_count1))
-            frame = self.draw_counter_text(frame, self.line_limits2, str(self.total_objects_count2)) # text for second line
 
             frame_counter = self.calculate_speed(speed,detections,frame_counter)
             self.update_coordinates_dict()
 
 
             frame = self.annotate_frame(frame,detections)
+            frame = self.draw_counter_text(frame, self.line_limits1, str(self.total_objects_count_line1))
+            frame = self.draw_counter_text(frame, self.line_limits2, str(self.total_objects_count_line2)) # text for second line
+            frame = self.draw_class_boxes(frame)
 
             ret, buffer = cv2.imencode('.jpg', frame)
             frame = buffer.tobytes()
             yield (b'--frame\r\n' b'Content-Type: image/jpeg\r\n\r\n' + bytearray(frame) + b'\r\n')
-            
+
         #     cv2.imshow("yolov8", frame)
         #     if (cv2.waitKey(30) == 27):
         #         break
