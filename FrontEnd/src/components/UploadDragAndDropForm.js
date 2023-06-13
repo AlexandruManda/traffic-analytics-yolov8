@@ -1,23 +1,44 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import './UploadDragAndDropForm.css';
 import Axios from "../types/AxiosType";
 import { useNavigate } from "react-router-dom";
 import { FaCamera, FaFileUpload, FaUpload, FaYoutube  } from "react-icons/fa";
 
-export default function UploadDragAndDropForm({ onFileSelect,isStreamStopped,onUrl }) {
+export default function UploadDragAndDropForm({task, onFileSelect,handleIsStreamStopped,handleUrl }) {
     
     const navigate = useNavigate();
     const [dragActive, setDragActive] = useState(false);
     const [inputValid, setInputValid] = useState(true);
     const [validationMessage, setValidationMessage] = useState("");
+    const [selectedUrl,setSelectedUrl]=useState("");
+
     const inputRef = useRef(null);
     const urlRef = useRef(null);
     
-    const validateYouTubeUrl = (url) => {
+    // useEffect(()=>{
+
+    //     if (selectedUrl =="")
+    //         return;
+    //     navigate(selectedUrl);
+    // },[selectedUrl]);
+
+    useEffect(() => {
+        // If task changes, clear the input
+        if (urlRef.current) {
+          urlRef.current.value = "";
+          setSelectedUrl("");
+        }
+      }, [task]);
+
+    const validateUrl = (url) => {
         if (url !== undefined || url !== '') {        
-            const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
-            const match = url.match(regExp);
-            return (match && match[2].length === 11)
+            const youtubeRegExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+            const udpOrRtspRegExp = /^(udp|rtsp):\/\/(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}):(\d{1,5})$/;
+            
+            const matchYouTube = url.match(youtubeRegExp);
+            const matchUdpRtsp = url.match(udpOrRtspRegExp);
+            
+            return ((matchYouTube && matchYouTube[2].length === 11) || matchUdpRtsp);
         }
         return false;
     }
@@ -25,17 +46,25 @@ export default function UploadDragAndDropForm({ onFileSelect,isStreamStopped,onU
     const handleFile = (file) => {
         const formData = new FormData();
         formData.append("video", file);
-        isStreamStopped();
+        handleIsStreamStopped(false);
         onFileSelect(file);
         Axios.axiosForm.post('/save_video', formData)
         .then((response)=>{
             if(response.status === 200){
                 // navigate(`/stream`);
+                // After successful upload, you can build your new URL here
+                const newUrl = `/stream?source=${response.data.filename}&task=${task}`;
+                handleUrl(newUrl);
+                navigate(newUrl);
                 if (inputRef.current) {
                     inputRef.current.value = "";
                 }
                 console.log("File uploaded successfully");
+                console.log(response.data);
                 onFileSelect(file);
+                setSelectedUrl(newUrl);
+                handleIsStreamStopped(true);
+                
 
             }
         })
@@ -101,22 +130,41 @@ export default function UploadDragAndDropForm({ onFileSelect,isStreamStopped,onU
     };
 
     const handleUrlChange = function (e) {
-        const url = e.target.value;
-        if (url === '') {
+        const inputURL = e.target.value;
+        if (inputURL === '') {
             setInputValid(false);
             setValidationMessage("Input field can't be empty.");
-            onUrl(null);
-        } else if (!validateYouTubeUrl(url)) {
+            handleUrl('/stream');
+            setSelectedUrl('/stream')
+        } else if (!validateUrl(inputURL)) {
             setInputValid(false);
             setValidationMessage("Input is not a valid URL or YouTube link.");
-            onUrl(null);
+            handleUrl('/stream');
+            setSelectedUrl('/stream')
         } else {
             console.log('Valid YouTube URL');
             setInputValid(true);
             setValidationMessage("");
-            isStreamStopped();
-            onUrl(url);
-            handleYouTubeDownload(url);
+            // isStreamStopped();
+           
+            const udpOrRtspRegExp = /^(udp|rtsp):\/\/(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}):(\d{1,5})$/;
+            const matchUdpRtsp = inputURL.match(udpOrRtspRegExp);
+            if (matchUdpRtsp) {
+                // for udp and rtsp, navigate to a new page
+                const processedUrl = `/stream?source=${encodeURI(inputURL)}&task=${task}`
+                console.log(processedUrl);
+                handleUrl(processedUrl);
+                setSelectedUrl(processedUrl);
+
+            } else {
+                // for youtube url, download the video
+                handleYouTubeDownload(inputURL);
+                const url = `/stream?source=${inputURL}&task=${task}`;
+                handleUrl(url);
+                setSelectedUrl(url);
+                
+            }
+            // handleYouTubeDownload(url);
         }
       
     };

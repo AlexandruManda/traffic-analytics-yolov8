@@ -17,6 +17,9 @@ services:
     container_name: backend_prod_c
     ports:
       - '5000:5000'
+      - "1235:1235/udp"
+    environment:
+      - DISPLAY=192.168.1.113:0.0
     deploy:
       resources:
         reservations:

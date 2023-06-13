@@ -9,7 +9,7 @@ from supervision import BoxAnnotator, Detections
 from ultralytics import YOLO
 from time import time
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from util import encode_mat_base64, resize_image, compress_image
+from yolo.util import encode_mat_base64, resize_image, compress_image
 
 class ObjectDetection:
     def __init__(self, source=0):
@@ -47,7 +47,6 @@ class ObjectDetection:
         # Extract detections for person class
         for result in results[0]:
             class_id = result.boxes.cls.cpu().numpy().astype(int)
-            # print(result.boxes)
 
             if class_id == 0:
                 xyxys.append(result.boxes.xyxy.cpu().numpy())
@@ -95,15 +94,15 @@ class ObjectDetection:
             cv2.putText(frame, f'FPS: {int(fps)}', (20, 70),
                         cv2.FONT_HERSHEY_SIMPLEX, 1.5, (0, 255, 0), 2)
 
-            ret, buffer = cv2.imencode('.jpg', frame)
-            frame = buffer.tobytes()
+            # ret, buffer = cv2.imencode('.jpg', frame)
+            # frame = buffer.tobytes()
 
-            yield (b'--frame\r\n' b'Content-Type: image/jpeg\r\n\r\n' + bytearray(frame) + b'\r\n')
-            # cv2.imshow("image",frame)
-            # if cv2.waitKey(5) & 0xFF == 27:
-            #     break
-        # cap.release()
-        # cv2.destroyAllWindows()
+            # yield (b'--frame\r\n' b'Content-Type: image/jpeg\r\n\r\n' + bytearray(frame) + b'\r\n')
+            cv2.imshow("image",frame)
+            if cv2.waitKey(5) & 0xFF == 27:
+                break
+        cap.release()
+        cv2.destroyAllWindows()
 
     def gen_image(self, frame):
 

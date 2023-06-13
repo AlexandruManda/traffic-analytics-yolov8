@@ -1,5 +1,11 @@
-pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu116
+For installing torchvision for custom cuda version
+!pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu116
 
-uwsgi --http :8000 --wsgi-file run.py --callable app
 
-uwsgi --http 127.0.0.1:8000 --master -p 4 -w run:app
+
+#see the devices available and take the camera name to put it in the next command
+ffmpeg -list_devices true -f avfoundation -i dummy
+
+#start ffmpeg for streaming the video through udp
+ffmpeg -f dshow -framerate 30 -i video="WEB CAM" -vcodec mpeg4 -q 12 -f mpegts udp://127.0.0.1:1235
+

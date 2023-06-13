@@ -2,7 +2,7 @@ import React, { useRef, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ReactPlayer from 'react-player';
 
-export default function VideoPreview({ file, onLineDrawing, handleFileReset }) {
+export default function VideoPreview({ file,task, onLineDrawing, handleFileReset,handleUrl }) {
     const videoRef = useRef(null);
     const canvasRef = useRef(null);
     const [startPoint, setStartPoint] = useState(null);
@@ -18,6 +18,7 @@ export default function VideoPreview({ file, onLineDrawing, handleFileReset }) {
         lines.forEach((line, index) => {
             builtUrl += `&line${index + 1}=(${line.start.x},${line.start.y})(${line.end.x},${line.end.y})`;
         });
+        builtUrl +=`&task=${task}`
         return builtUrl;
     };
 
@@ -69,6 +70,7 @@ export default function VideoPreview({ file, onLineDrawing, handleFileReset }) {
         if (lines.length === 2) {
             onLineDrawing(lines);
             const url = buildURL();
+            handleUrl(url);
             handleFileReset();
             navigate(url);
         }
@@ -123,7 +125,6 @@ export default function VideoPreview({ file, onLineDrawing, handleFileReset }) {
                     )}
                     {isVideoLoaded && (
                         <ReactPlayer
-                            // url={URL.createObjectURL(file)}
                             ref={videoRef}
                             width="100%"
                             height="100%"

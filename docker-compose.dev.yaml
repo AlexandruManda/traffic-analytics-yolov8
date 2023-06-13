@@ -17,6 +17,7 @@ services:
       context: ./BackEnd
       dockerfile: Dockerfile.dev
     container_name: backend_c
+    privileged: true
     ports:
       - '5000:5000'
     deploy:
