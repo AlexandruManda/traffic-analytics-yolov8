@@ -24,7 +24,21 @@ except ImportError:
 
 
 class ObjectTracker(BaseTracker):
-    def __init__(self, source=0,model_name="yolo-highway-v2.pt", lines_coords=[]):
+    def __init__(self, 
+             source=0, 
+             model_name="yolo-highway-v2.pt", 
+             lines_coords=[], 
+             line_color=(0, 0, 255), 
+             text_color=(255, 255, 255),
+             line_font=cv2.FONT_HERSHEY_SIMPLEX,
+             line_font_scale=1, 
+             line_thickness=2, 
+             text_thickness=2,
+             box_thickness=2,
+             box_text_thickness=1,
+             box_text_scale=0.5,
+             box_text_padding=2
+             ):
         """
         Initializes the ObjectTracker.
 
@@ -46,12 +60,22 @@ class ObjectTracker(BaseTracker):
         
         #% Initialize the box annotator for drawing bounding boxes and labels
         self.box_annotator = sv.BoxAnnotator(
-            color=sv.ColorPalette.default(), thickness=2, text_thickness=1, text_scale=0.5, text_padding=2)
-   
+                color=sv.ColorPalette.default(), 
+                thickness=box_thickness, 
+                text_thickness=box_text_thickness, 
+                text_scale=box_text_scale, 
+                text_padding=box_text_padding)
 
         #% Create instances of Line, TotalCountRectangle, and SpeedEstimation classes
         self.speed_estimation = SpeedEstimation(class_name_dict=self.class_name_dict,box_annotator=self.box_annotator)
-        self.lines = [Line(self.class_name_dict, line_coord=coords) for coords in lines_coords]
+        self.lines = [Line(self.class_name_dict, 
+                       line_coord=coords, 
+                       line_color=line_color, 
+                       text_color=text_color,
+                       line_font=line_font,
+                       line_font_scale=line_font_scale, 
+                       line_thickness=line_thickness, 
+                       text_thickness=text_thickness) for coords in lines_coords]
         self.total_counts = TotalCountRectangle(self.class_name_dict)
 
     def load_model(self):

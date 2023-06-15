@@ -8,7 +8,18 @@ except ImportError:
     from base.base_counter import BaseCounter
 
 class PersonCount(BaseCounter):
-    def __init__(self,class_names_dict):
+    def __init__(self,
+                 class_names_dict,
+                 text_font=cv2.FONT_HERSHEY_SIMPLEX, 
+                 text_scale=1, 
+                 text_color=(255, 255, 255), 
+                 text_thickness=2):
+        
+        self.text_font = text_font
+        self.text_scale = text_scale
+        self.text_color = text_color
+        self.text_thickness = text_thickness
+
         self.total_person_count = 0
         self.total_person_counted = set()
         self.total_class_object_counts = {'person': 0 }
@@ -17,7 +28,7 @@ class PersonCount(BaseCounter):
         self.current_dir = os.path.join(os.path.dirname(os.path.dirname((os.path.abspath(__file__)))))
         self.img_path = os.path.join(self.current_dir, "assets", "Images", "person-card.png")
         self.boxes_image = cv2.imread(self.img_path, cv2.IMREAD_UNCHANGED)
-    
+        
     def count(self,detections):
         if len(detections) >0:
             for _, _, class_id, tracker_id in detections:
@@ -46,8 +57,13 @@ class PersonCount(BaseCounter):
         pos = [pos_x, pos_y]
 
         frame = cvzone.overlayPNG(frame, self.boxes_image, pos)
-        cv2.putText(frame, f"{self.total_class_object_counts['person']}", (pos_x+60, pos_y+15 + int(boxes_image_height/2)),
-                    cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2)
-     
+        
+        cv2.putText(frame, 
+                    f"{self.total_class_object_counts['person']}", 
+                    (pos_x+60, pos_y+15 + int(boxes_image_height/2)),
+                    self.text_font, 
+                    self.text_scale, 
+                    self.text_color, 
+                    self.text_thickness)
 
         return frame

@@ -12,7 +12,16 @@ except ImportError:
                                        # -?         v    v    v    v
                                        # -%         x1   y1   x2   y2
 class Line:
-    def __init__(self,class_names_dict,line_coord=[(268,435),(592,447)]):
+    def __init__(self,
+                 class_names_dict,
+                 line_coord=[(268,435),(592,447)],
+                 line_color=(0, 0, 255),
+                 text_color=(255, 255, 255),
+                 line_font=cv2.FONT_HERSHEY_SIMPLEX,
+                 line_font_scale=1,
+                 line_thickness=2,
+                 text_thickness=2):
+        
         self.total_objects_count = 0
         self.counted_objects = set()
         self.line_limits=line_coord
@@ -20,8 +29,16 @@ class Line:
         self.class_object_counts={'car':0,'motorcycle':0,'bus':0,'truck':0}
         self.line_coord = line_coord
 
+
+        self.line_color = line_color
+        self.text_color = text_color
+        self.line_font = line_font
+        self.line_font_scale = line_font_scale
+        self.line_thickness = line_thickness
+        self.text_thickness = text_thickness
+
                                      
-    def draw_line(self, frame, color=(0, 0, 255),font_scale=1,thickness=2):
+    def draw_line(self, frame):
         """
         Draws a line on the given frame.
 
@@ -35,12 +52,12 @@ class Line:
         """
         start_point = self.line_coord[0]
         end_point = self.line_coord[1]
-        cv2.line(frame, start_point, end_point, color, thickness)
-        self.draw_counter_on_line(self,frame,font_scale=font_scale,thickness=thickness)
+        cv2.line(frame, start_point, end_point, self.line_color, self.line_thickness)
+        self.draw_counter_on_line(frame)
         return frame
 
-    @staticmethod
-    def draw_counter_on_line(self,frame, font_scale=1, thickness=2):
+
+    def draw_counter_on_line(self,frame):
         """
         Draws the counter text on the frame.
 
@@ -55,8 +72,8 @@ class Line:
         x1 = self.line_limits[0][0]
         y1 = self.line_limits[0][1] - 10  # Move text a bit above the line
         counter_text = f"{self.total_objects_count}"
-        cv2.putText(frame, counter_text, (x1, y1),
-                    cv2.FONT_HERSHEY_SIMPLEX, font_scale, (255, 255, 255), thickness)
+
+        cv2.putText(frame, counter_text, (x1, y1), self.line_font, self.line_font_scale, self.text_color, self.text_thickness)
         return frame
     
     def count(self, detections):  

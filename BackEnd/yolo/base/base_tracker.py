@@ -39,6 +39,7 @@ class BaseTracker(ABC):
         Runs the tracking process.
         """
         pass
+    
     def is_youtube_url(self,url):
         youtube_regex = (
             r'(https?://)?(www\.)?'

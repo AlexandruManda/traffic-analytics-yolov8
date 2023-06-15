@@ -17,7 +17,19 @@ except ImportError:
     from util import process_source
 
 class PersonDetectionTracker(BaseTracker):
-    def __init__(self,source=0,model_name="yolov8m.pt"):
+    def __init__(self,
+                 source=0,
+                 model_name="yolov8m.pt", 
+                 box_thickness=2, 
+                 text_thickness=1, 
+                 text_scale=0.5, 
+                 text_padding=2,
+                 counter_text_font=cv2.FONT_HERSHEY_SIMPLEX, 
+                 counter_text_scale=1, 
+                 counter_text_color=(255, 255, 255), 
+                 counter_text_thickness=2
+                 ):
+                 
         super().__init__(source=source,model_name=model_name)
         self.current_dir = os.path.dirname(os.path.abspath(__file__))
         self.model = self.load_model()
@@ -28,9 +40,18 @@ class PersonDetectionTracker(BaseTracker):
         
         #% Initialize the box annotator for drawing bounding boxes and labels
         self.box_annotator = sv.BoxAnnotator(
-            color=sv.ColorPalette.default(), thickness=2, text_thickness=1, text_scale=0.5, text_padding=2)
+                color=sv.ColorPalette.default(), 
+                thickness=box_thickness, 
+                text_thickness=text_thickness, 
+                text_scale=text_scale, 
+                text_padding=text_padding
+            )
 
-        self.person_counter = PersonCount(self.class_name_dict)
+        self.person_counter = PersonCount(self.class_name_dict, 
+                                          counter_text_font, 
+                                          counter_text_scale, 
+                                          counter_text_color, 
+                                          counter_text_thickness)
  
     def load_model(self):
         """

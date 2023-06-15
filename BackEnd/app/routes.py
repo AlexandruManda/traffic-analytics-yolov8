@@ -6,10 +6,10 @@ import re
 
 try:
     from .utils.download_manager import DownloadManager
-    from .tracker.tracker_factory import TrackerFactory
+    from .tracker.tracker_manager import TrackerManager
 except:
     from utils.download_manager import DownloadManager
-    from tracker.tracker_factory import TrackerFactory
+    from tracker.tracker_manager import TrackerManager
 
 bp = Blueprint('video', __name__, url_prefix="/api")
 MIME_TYPE = 'multipart/x-mixed-replace; boundary=frame'
@@ -56,7 +56,8 @@ def video():
     source = "0" if source == "0" else (source if re.match(r'^(https?|udp)://', source) else os.path.join(upload_folder, source))
 
     print(source)
-    tracker = TrackerFactory.get_tracker(task, source, line1, line2)
+    tracker_manager = TrackerManager()
+    tracker = tracker_manager.create_tracker(task, source, line1, line2)
 
     if tracker:
         return Response(tracker(), mimetype=MIME_TYPE)
