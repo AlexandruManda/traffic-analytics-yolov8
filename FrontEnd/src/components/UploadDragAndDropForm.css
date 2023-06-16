@@ -131,12 +131,36 @@
     left: 0px;
   }
   
-  #source-url {
+#source-url {
     margin-top: 1rem;
-    padding: 0.25rem;
+    padding: 0.5rem;  /* Increase the padding */
+    font-size: 1rem; /* Increase the font size */
     border-radius: 0.25rem;
     border: 1px solid #cccccc;
-  }
+    width: 70%;  /* Adjust as needed */
+}
+
+#input-group {
+  position: relative;
+  display: inline-block; /* so it doesn't take full width */
+  width: 70%;  /* adjust as needed */
+}
+#clear-button {
+  position: absolute;
+  cursor: pointer;
+  top: 66%;
+  right: 20px; /* adjust based on your preference */
+  background: transparent;
+  border: none;
+  color: red;  /* adjust the color as needed */
+  font-size: 20px; /* adjust the size as needed */
+  font-size: 20px; /* Adjust the size as needed */
+  transform: translateY(-50%); /* center vertically */
+}
+
+#clear-url-btn:hover {
+    background-color: #66bb6a;
+}
   
   .validation-message {
     font-size: 0.8rem;

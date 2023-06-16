@@ -1,0 +1,67 @@
+/* HomePage.css */
+.homepage {
+    font-family: Arial, sans-serif;
+  }
+  
+  .navbar {
+    background-color: #333;
+    color: #fff;
+    padding: 10px;
+  }
+  
+  .nav-list {
+    list-style: none;
+    display: flex;
+    justify-content: center;
+    padding: 0;
+  }
+  
+  .nav-item {
+    margin-right: 15px;
+  }
+  
+  .nav-item a {
+    color: #fff;
+    text-decoration: none;
+  }
+  
+  .hero-section {
+    text-align: center;
+    margin: 20px 0;
+  }
+  
+  .hero-image {
+    width: 100%;
+    max-width: 800px;
+  }
+  
+  .content-section {
+    padding: 20px;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  
+  .container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  
+  .content-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 30px;
+  }
+  
+  .content-image {
+    width: 200px;
+    margin-bottom: 20px;
+  }
+  
+  p {
+    margin: 0;
+    line-height: 1.5;
+  }
+  

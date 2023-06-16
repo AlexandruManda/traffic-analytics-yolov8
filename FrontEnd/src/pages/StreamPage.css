@@ -1,0 +1,38 @@
+.stream-page-container {
+    /* Other properties... */
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 20px;
+    justify-content: center;
+    align-items: center;
+    height: 80vh;
+    margin: 0 auto;
+    padding: 20px;
+    box-sizing: border-box;
+    max-width: 90%;
+  }
+  
+  @media (max-width: 768px) {
+    .stream-page-container {
+      grid-template-columns: 1fr;
+      height: auto;
+    }
+  }
+  .task-select {
+    width: 50%;
+    height: 40px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    padding: 5px;
+    font-size: 16px;
+    color: #ffffff;
+    font-weight: bold;
+    background-color: #85d67c;
+    appearance: none;
+    transition: border-color 0.3s ease;
+}
+
+.task-select:focus {
+    border-color: #007BFF;
+    outline: none;
+}

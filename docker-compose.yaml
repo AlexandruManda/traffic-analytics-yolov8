@@ -27,25 +27,4 @@ services:
           - driver: nvidia
             device_ids: ['0']
             capabilities: [gpu]
-  mongodb:
-    image: mongo
-    ports:
-      - 27017:27017
-    restart: always
-    environment:
-      - MONGO_INITDB_ROOT_USERNAME=admin
-      - MONGO_INITDB_ROOT_PASSWORD=password
-    volumes:
-      - ./mongo-init:/docker-entrypoint-initdb.d
-
-  mongo-express:
-    image: mongo-express
-    ports:
-      - 8081:8081
-    environment:
-      - ME_CONFIG_MONGODB_ADMINUSERNAME=admin
-      - ME_CONFIG_MONGODB_ADMINPASSWORD=password
-      - ME_CONFIG_MONGODB_SERVER=mongodb
-    links: 
-        - mongodb:mongodb
-    restart: always
+  

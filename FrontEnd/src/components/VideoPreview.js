@@ -2,7 +2,7 @@ import React, { useRef, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ReactPlayer from 'react-player';
 
-export default function VideoPreview({ file,task, onLineDrawing, handleFileReset,handleUrl }) {
+export default function VideoPreview({ file, onLineDrawing }) {
     const videoRef = useRef(null);
     const canvasRef = useRef(null);
     const [startPoint, setStartPoint] = useState(null);
@@ -11,17 +11,10 @@ export default function VideoPreview({ file,task, onLineDrawing, handleFileReset
     const [currentLine, setCurrentLine] = useState(null);
     const [isVideoLoaded, setIsVideoLoaded] = useState(false);
 
-    const navigate = useNavigate();
-
-    const buildURL = () => {
-        let builtUrl = `/stream?source=${file?.name }`;
-        lines.forEach((line, index) => {
-            builtUrl += `&line${index + 1}=(${line.start.x},${line.start.y})(${line.end.x},${line.end.y})`;
-        });
-        builtUrl +=`&task=${task}`
-        return builtUrl;
-    };
-
+    useEffect(() => {
+        onLineDrawing(lines);
+    }, [lines]);
+    
     useEffect(() => {
         if (file) {
             const video = videoRef.current;
@@ -66,18 +59,12 @@ export default function VideoPreview({ file,task, onLineDrawing, handleFileReset
                 context.stroke();
             }
         };
-
-        if (lines.length === 2) {
-            onLineDrawing(lines);
-            const url = buildURL();
-            handleUrl(url);
-            handleFileReset();
-            navigate(url);
-        }
-
+        
         const intervalId = setInterval(drawCanvas, 1000 / 30);
-        return () => clearInterval(intervalId);
-    }, [lines, currentLine, onLineDrawing, handleFileReset, navigate]);
+        return(()=>{
+            clearInterval(intervalId);
+        });
+    }, [lines,currentLine]);
 
     const handleMouseDown = (e) => {
         if (lines.length >= 2) {
@@ -98,7 +85,8 @@ export default function VideoPreview({ file,task, onLineDrawing, handleFileReset
         const x = e.clientX - rect.left;
         const y = e.clientY - rect.top;
         if (currentLine) {
-            setLines([...lines, { start: currentLine.start, end: { x, y } }]);
+            const newLine = { start: currentLine.start, end: { x, y } };
+            setLines([...lines, newLine]);
             setCurrentLine(null);
         }
     };
@@ -114,6 +102,7 @@ export default function VideoPreview({ file,task, onLineDrawing, handleFileReset
         const x = e.clientX - rect.left;
         const y = e.clientY - rect.top;
         setCurrentLine({ ...currentLine, end: { x, y } });
+       
     };
 
     return (
@@ -141,7 +130,24 @@ export default function VideoPreview({ file,task, onLineDrawing, handleFileReset
                         onMouseUp={handleMouseUp}
                         onMouseMove={handleMouseMove}
                     />
-                    <button onClick={() => setLines([])}>Clear</button>
+                    <button style={{
+                                    position: 'absolute',
+                                    bottom: '10px',
+                                    right: '10px',
+                                    zIndex: 1,
+                                    fontSize: '16px',
+                                    padding: '10px 20px',
+                                    border: 'none',
+                                    borderRadius: '5px',
+                                    color: '#FFFFFF',
+                                    backgroundColor: '#ff6347',
+                                    cursor: 'pointer',
+                                    transition: 'background-color 0.3s ease'
+                                    }} 
+                            onClick={() => setLines([])}>
+                                
+                            Clear Lines
+                    </button>
                 </div>
             )}
         </div>
