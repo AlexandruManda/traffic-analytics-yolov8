@@ -1,9 +1,10 @@
 
 
 import cv2
+from flask import g
 try:
     from app.tracker.tracker_factory import TrackerFactory
-    from app.db import get_db_instance
+    from app.db import get_db
     from ..utils.query_params_helper import QueryParamHelper
 except ImportError:
     from BackEnd.app.tracker.tracker_factory import TrackerFactory
@@ -11,7 +12,7 @@ except ImportError:
 
 class TrackerManager:
     def __init__(self):
-        self.db = get_db_instance()
+        self.db = get_db()
 
     def create_tracker(self, task, source, line1, line2):
         """

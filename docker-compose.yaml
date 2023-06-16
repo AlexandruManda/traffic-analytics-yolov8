@@ -1,0 +1,51 @@
+version: "3.10"
+
+name: traffic_analysis
+services:
+  frontend:
+    build: ./FrontEnd
+    container_name: frontend_c
+    ports:
+      - '80:80'
+    stdin_open: true
+    tty: true
+
+  backend:
+    build:
+      context: ./BackEnd
+      dockerfile: Dockerfile
+    container_name: backend_c
+    ports:
+      - '5000:5000'
+      - "1235:1235/udp"
+    environment:
+      - DISPLAY=192.168.1.113:0.0
+    deploy:
+      resources:
+        reservations:
+          devices:
+          - driver: nvidia
+            device_ids: ['0']
+            capabilities: [gpu]
+  mongodb:
+    image: mongo
+    ports:
+      - 27017:27017
+    restart: always
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=password
+    volumes:
+      - ./mongo-init:/docker-entrypoint-initdb.d
+
+  mongo-express:
+    image: mongo-express
+    ports:
+      - 8081:8081
+    environment:
+      - ME_CONFIG_MONGODB_ADMINUSERNAME=admin
+      - ME_CONFIG_MONGODB_ADMINPASSWORD=password
+      - ME_CONFIG_MONGODB_SERVER=mongodb
+    links: 
+        - mongodb:mongodb
+    restart: always

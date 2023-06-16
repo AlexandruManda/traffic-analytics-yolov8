@@ -17,6 +17,9 @@ def create_app():
 
     CORS(app, resources={r"/*": {"origins": "*"}})
 
+    from . import db 
+    app.teardown_appcontext(db.close_db)
+
     from . import routes
     app.register_blueprint(routes.bp)
 
