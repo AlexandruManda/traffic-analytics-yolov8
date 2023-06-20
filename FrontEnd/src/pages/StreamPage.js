@@ -190,7 +190,7 @@ export default function StreamPage() {
     },[url]);
 
     useEffect(()=>{
-        if(selectedFile && selectedTask==task[1]){
+        if(selectedFile && selectedTask==tasks[1]){
             setIsStreamStopped(true);
         }
     },[selectedFile]);

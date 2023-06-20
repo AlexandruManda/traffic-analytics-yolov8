@@ -38,7 +38,7 @@ class Line:
         self.text_thickness = text_thickness
 
                                      
-    def draw_line(self, frame):
+    def draw(self, frame):
         """
         Draws a line on the given frame.
 

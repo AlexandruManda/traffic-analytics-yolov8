@@ -140,7 +140,7 @@ class ObjectTracker(BaseTracker):
 
         #% Draw lines and total counts
         for line in self.lines:
-            frame = line.draw_line(frame)
+            frame = line.draw(frame)
         frame = self.total_counts.draw(frame)
 
         return frame, frame_counter_for_tracker_id
