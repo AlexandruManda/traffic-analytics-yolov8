@@ -10,22 +10,6 @@ COPY requirements.txt .
 
 RUN pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu116
 
-# RUN apt-get update && apt-get install -y \
-#     libxkbcommon-x11-0 \
-#     libxcb-xinerama0 \
-#     libxcb-icccm4 \
-#     libxcb-image0 \
-#     libxcb-keysyms1 \
-#     libxcb-render-util0 \
-#     libxcb-util1 \
-#     libxcb-xfixes0 \
-#     libxcb-xkb1 \
-#     build-essential \
-#     libxrender1 \
-#     libxtst6 \
-#     openssl \
-#     libssl-dev \
-#     xvfb
 
 RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
     && apt-get -y install --no-install-recommends \
@@ -62,7 +46,6 @@ RUN apt-get install -y libglib2.0-0
 
 COPY . .
 
-# RUN chmod 644 ./assets/images/counter.png
 EXPOSE 5000
 
 CMD uwsgi --http :5000 --http-websockets --master --wsgi-file run.py --callable app

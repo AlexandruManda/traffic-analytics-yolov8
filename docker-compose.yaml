@@ -19,7 +19,7 @@ services:
       - '5000:5000'
       - "1235:1235/udp"
     environment:
-      - DISPLAY=192.168.1.113:0.0
+      - DISPLAY=<YOUR_LOCAL_IP>:0.0
     deploy:
       resources:
         reservations:
@@ -28,3 +28,32 @@ services:
             device_ids: ['0']
             capabilities: [gpu]
   
+  mongo:
+    image: mongo
+    container_name: mongodb
+    restart: always
+    ports:
+      - '0.0.0.0:27022:27017'
+    volumes:
+      - ./mongo-init:/docker-entrypoint-initdb.d
+      - ./mongo-init/data:/tmp/data
+      - ~/dev/mongodb/data/m3:/data/db
+    logging:
+      driver: "local"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=1234
+
+  mongo-express:
+    image: mongo-express
+    container_name: mongo-express
+    restart: always
+    ports:
+      - 8081:8081
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+      ME_CONFIG_MONGODB_ADMINPASSWORD: 1234
+      ME_CONFIG_MONGODB_URL: mongodb://root:1234@mongo:27017/

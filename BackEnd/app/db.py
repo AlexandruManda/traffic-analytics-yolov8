@@ -5,7 +5,7 @@ DATABASE_NAME="trackerDb"
 
 def get_db():
     if 'db' not in g:
-        g.db = MongoClient("mongodb://localhost:27017/").trackerDb
+        g.db = MongoClient("mongodb://root:1234@mongo:27017/").trackerDb
     return g.db
 
 def close_db(error=None):
