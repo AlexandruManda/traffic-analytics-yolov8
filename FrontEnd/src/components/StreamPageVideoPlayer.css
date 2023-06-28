@@ -7,7 +7,10 @@
   }
 
 
-  
+.loading-spinner{
+  width:60%;
+  height:60%;
+}
 .stream-img {
     width: 100%; /* takes the full width of the parent element */
     height:100%;
