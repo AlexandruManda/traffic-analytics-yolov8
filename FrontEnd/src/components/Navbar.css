@@ -1,0 +1,29 @@
+.navbar {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  background: linear-gradient(to right, #145A32, #0B5345); /* Darker green gradient background */
+  height: 60px;
+  padding: 0 20px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1); /* Optional: Add a subtle shadow for depth */
+}
+
+.nav-list {
+    display: flex;
+    list-style: none;
+}
+
+.nav-item {
+    margin: 0 10px;
+}
+
+.nav-item a {
+    color: #ffffff; /* White text color */
+    font-weight: bold;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.nav-item a:hover {
+    color: #007BFF; /* Change text color on hover */
+}

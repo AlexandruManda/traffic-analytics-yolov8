@@ -1,39 +1,25 @@
 /* HomePage.css */
+
 .homepage {
-    font-family: Arial, sans-serif;
-  }
-  
-  .navbar {
-    background-color: #333;
-    color: #fff;
-    padding: 10px;
-  }
-  
-  .nav-list {
-    list-style: none;
-    display: flex;
-    justify-content: center;
-    padding: 0;
-  }
-  
-  .nav-item {
-    margin-right: 15px;
-  }
-  
-  .nav-item a {
-    color: #fff;
-    text-decoration: none;
-  }
-  
-  .hero-section {
-    text-align: center;
-    margin: 20px 0;
-  }
-  
-  .hero-image {
-    width: 100%;
-    max-width: 800px;
-  }
+  font-family: Arial, sans-serif;
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden; 
+}
+
+.hero-section {
+  text-align: center;
+  width: 100%;
+  height: 50vh;  
+  overflow: hidden; 
+}
+
+.hero-image {
+  width: 100%;
+  height: 100%; 
+  object-fit: cover; 
+}
+
   
   .content-section {
     padding: 20px;

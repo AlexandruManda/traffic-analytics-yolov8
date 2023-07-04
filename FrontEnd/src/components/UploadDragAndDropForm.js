@@ -127,10 +127,10 @@ export default function UploadDragAndDropForm({ task, onFileSelect, handleUrl })
             setValidationMessage("");
             const udpOrRtspRegExp = /^(udp|rtsp):\/\/(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}):(\d{1,5})$/;
             const matchUdpRtsp = inputURL.match(udpOrRtspRegExp);
+            const processedUrl = `/stream?source=${encodeURI(inputURL)}&task=${task}`
+            handleUrl(processedUrl);
             if (matchUdpRtsp) {
                 // for udp and rtsp, navigate to a new page
-                const processedUrl = `/stream?source=${encodeURI(inputURL)}&task=${task}`
-                handleUrl(processedUrl);
 
             } else {
                 // for youtube url, download the video
