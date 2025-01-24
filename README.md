@@ -60,3 +60,10 @@ The system is optimized for GPU processing using CUDA, significantly outperformi
 3. Start the application:
    ```bash
     docker-compose up
+
+## Demo
+
+https://github.com/user-attachments/assets/94ec153d-ec28-45c8-8b96-a93064a9f0ee
+
+
+
