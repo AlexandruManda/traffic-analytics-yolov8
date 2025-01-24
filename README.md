@@ -39,7 +39,7 @@ The project follows a modular architecture that includes:
 ### Architecture Diagram
 Below is an architecture diagram showcasing the system's modular design:
 
-![System Architecture](![image](https://github.com/user-attachments/assets/a18b0424-cd5a-4fc4-9d42-ed9353d739e7)) 
+![image](https://github.com/user-attachments/assets/aa342058-ec40-417d-9415-6e23b7f4e8b1)
 
 ## Performance and Results
 The system is optimized for GPU processing using CUDA, significantly outperforming CPU-based solutions. Detailed comparisons and benchmarks demonstrate its real-time processing capability, even for large datasets.
@@ -57,3 +57,6 @@ The system is optimized for GPU processing using CUDA, significantly outperformi
 2. Install dependencies:
    ```bash
    pip install -r requirements.txt
+3. Start the application:
+   ```bash
+    docker-compose up
